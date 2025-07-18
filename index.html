@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Days Calculator</title>
+</head>
+<body>
+    <div id="app-container"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create main app container
+            const appContainer = document.getElementById('app-container');
+            
+            // Set HTML content with embedded CSS
+            appContainer.innerHTML = `
+                <style>
+                    #app-container .business-days-calculator {
+                        font-family: 'Georgia', serif;
+                        max-width: 600px;
+                        margin: 20px auto;
+                        padding: 25px;
+                        background-color: #f9f5e8;
+                        border: 1px solid #d4c9a8;
+                        border-radius: 5px;
+                        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                        color: #333;
+                    }
+                    
+                    #app-container .calculator-header {
+                        text-align: center;
+                        margin-bottom: 20px;
+                        padding-bottom: 15px;
+                        border-bottom: 2px solid #d4c9a8;
+                    }
+                    
+                    #app-container .calculator-header h1 {
+                        color: #ad2a24;
+                        font-size: 24px;
+                        margin: 0;
+                        font-weight: normal;
+                    }
+                    
+                    #app-container .calculator-header p {
+                        color: #666;
+                        font-size: 14px;
+                        margin: 5px 0 0;
+                    }
+                    
+                    #app-container .input-section {
+                        margin-bottom: 20px;
+                    }
+                    
+                    #app-container .input-section h2 {
+                        font-size: 18px;
+                        color: #ad2a24;
+                        margin: 0 0 10px;
+                        font-weight: normal;
+                    }
+                    
+                    #app-container .date-input {
+                        display: flex;
+                        gap: 10px;
+                        margin-bottom: 15px;
+                    }
+                    
+                    #app-container .date-input select, 
+                    #app-container .date-input input {
+                        padding: 8px 10px;
+                        border: 1px solid #d4c9a8;
+                        border-radius: 4px;
+                        background-color: #fff;
+                        font-family: 'Georgia', serif;
+                        font-size: 16px;
+                    }
+                    
+                    #app-container .date-input select {
+                        flex: 2;
+                        min-width: 0;
+                    }
+                    
+                    #app-container .date-input input {
+                        flex: 1;
+                        min-width: 0;
+                        width: 100%;
+                    }
+                    
+                    #app-container .error-message {
+                        color: #ad2a24;
+                        font-size: 14px;
+                        margin-top: 5px;
+                        display: none;
+                    }
+                    
+                    #app-container .date-input.invalid input,
+                    #app-container .date-input.invalid select {
+                        border-color: #ad2a24;
+                        background-color: #fff5f5;
+                    }
+                    
+                    @media (max-width: 480px) {
+                        #app-container .date-input {
+                            flex-direction: column;
+                            gap: 8px;
+                        }
+                        
+                        #app-container .date-input select,
+                        #app-container .date-input input {
+                            width: 100%;
+                            box-sizing: border-box;
+                        }
+                    }
+                    
+                    #app-container .options-section {
+                        margin: 25px 0;
+                    }
+                    
+                    #app-container .options-section label {
+                        display: block;
+                        margin-bottom: 8px;
+                        font-size: 15px;
+                    }
+                    
+                    #app-container .options-section select {
+                        width: 100%;
+                        padding: 8px 10px;
+                        border: 1px solid #d4c9a8;
+                        border-radius: 4px;
+                        background-color: #fff;
+                        font-family: 'Georgia', serif;
+                        font-size: 16px;
+                    }
+                    
+                    #app-container .checkbox-section {
+                        margin: 20px 0;
+                    }
+                    
+                    #app-container .checkbox-section label {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        font-size: 15px;
+                        cursor: pointer;
+                    }
+                    
+                    #app-container .checkbox-section input {
+                        margin: 0;
+                    }
+                    
+                    #app-container .button-group {
+                        display: flex;
+                        gap: 10px;
+                        margin: 25px 0;
+                    }
+                    
+                    #app-container .button-group button {
+                        flex: 1;
+                        padding: 12px;
+                        border: none;
+                        border-radius: 4px;
+                        font-family: 'Georgia', serif;
+                        font-size: 16px;
+                        cursor: pointer;
+                        transition: background-color 0.2s;
+                    }
+                    
+                    #app-container .calculate-btn {
+                        background-color: #ad2a24;
+                        color: white;
+                    }
+                    
+                    #app-container .calculate-btn:hover {
+                        background-color: #8c221d;
+                    }
+                    
+                    #app-container .clear-btn {
+                        background-color: #d4c9a8;
+                        color: #333;
+                    }
+                    
+                    #app-container .clear-btn:hover {
+                        background-color: #c4b998;
+                    }
+                    
+                    #app-container .results-section {
+                        margin-top: 25px;
+                        padding: 15px;
+                        background-color: #fff;
+                        border: 1px solid #d4c9a8;
+                        border-radius: 4px;
+                        display: none;
+                    }
+                    
+                    #app-container .results-section h3 {
+                        color: #ad2a24;
+                        font-size: 18px;
+                        margin: 0 0 10px;
+                        font-weight: normal;
+                    }
+                    
+                    #app-container .result-line {
+                        margin-bottom: 8px;
+                        font-size: 15px;
+                    }
+                    
+                    #app-container .holiday-list {
+                        margin-top: 10px;
+                        padding-top: 10px;
+                        border-top: 1px dashed #d4c9a8;
+                        font-size: 14px;
+                        color: #666;
+                    }
+                </style>
+
+                <div class="business-days-calculator">
+                    <div class="calculator-header">
+                        <h1>Business Days Calculator</h1>
+                        <p>Calculate working days between two dates</p>
+                    </div>
+
+                    <div class="input-section">
+                        <h2>Start Date</h2>
+                        <div class="date-input" id="start-date-input">
+                            <select id="start-month"></select>
+                            <input type="number" id="start-day" min="1" max="31" placeholder="Day">
+                            <input type="number" id="start-year" placeholder="Year">
+                            <div class="error-message" id="start-date-error"></div>
+                        </div>
+                    </div>
+
+                    <div class="input-section">
+                        <h2>End Date</h2>
+                        <div class="date-input" id="end-date-input">
+                            <select id="end-month"></select>
+                            <input type="number" id="end-day" min="1" max="31" placeholder="Day">
+                            <input type="number" id="end-year" placeholder="Year">
+                            <div class="error-message" id="end-date-error"></div>
+                        </div>
+                    </div>
+
+                    <div class="options-section">
+                        <label for="exclusion-option">Exclusion Options:</label>
+                        <select id="exclusion-option">
+                            <option value="weekends-holidays">Exclude Weekends and US Federal Holidays</option>
+                            <option value="weekends">Exclude Weekends</option>
+                            <option value="sundays">Exclude Sundays only</option>
+                        </select>
+                    </div>
+
+                    <div class="checkbox-section">
+                        <label>
+                            <input type="checkbox" id="include-end-date">
+                            Include end date (1 day is added)
+                        </label>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="calculate-btn" id="calculate-btn">Calculate Duration</button>
+                        <button class="clear-btn" id="clear-btn">Clear</button>
+                    </div>
+
+                    <div class="results-section" id="results-section">
+                        <h3>Calculation Results</h3>
+                        <div class="result-line" id="from-date"></div>
+                        <div class="result-line" id="to-date"></div>
+                        <div class="result-line"><strong>Result:</strong></div>
+                        <div class="result-line" id="business-days"></div>
+                        <div class="result-line" id="calendar-days"></div>
+                        <div class="result-line" id="skipped-days"></div>
+                        <div class="holiday-list" id="holiday-list"></div>
+                    </div>
+                </div>
+            `;
+
+            // Initialize the months dropdown
+            const months = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
+
+            const startMonthSelect = document.getElementById('start-month');
+            const endMonthSelect = document.getElementById('end-month');
+            
+            months.forEach((month, index) => {
+                const option = document.createElement('option');
+                option.value = index + 1;
+                option.textContent = month;
+                startMonthSelect.appendChild(option.cloneNode(true));
+                endMonthSelect.appendChild(option);
+            });
+
+            // Set default dates to today
+            const today = new Date();
+            const currentMonth = today.getMonth() + 1;
+            const currentDay = today.getDate();
+            const currentYear = today.getFullYear();
+
+            startMonthSelect.value = currentMonth;
+            document.getElementById('start-day').value = currentDay;
+            document.getElementById('start-year').value = currentYear;
+
+            endMonthSelect.value = currentMonth;
+            document.getElementById('end-day').value = currentDay;
+            document.getElementById('end-year').value = currentYear;
+
+            // Function to validate a date
+            function isValidDate(day, month, year) {
+                // Check if all fields are numbers
+                if (isNaN(day) || isNaN(month) || isNaN(year)) {
+                    return false;
+                }
+
+                // Create a date object (months are 0-based in JavaScript)
+                const date = new Date(year, month - 1, day);
+                
+                // Check if the created date matches the input values
+                return (
+                    date.getFullYear() === year &&
+                    date.getMonth() === month - 1 &&
+                    date.getDate() === day
+                );
+            }
+
+            // Function to get days in month (accounting for leap years)
+            function getDaysInMonth(month, year) {
+                return new Date(year, month, 0).getDate();
+            }
+
+            // Function to validate date inputs
+            function validateDate(e) {
+                const input = e.target;
+                const dateInput = input.closest('.date-input');
+                const dayInput = dateInput.querySelector('input[type="number"]:nth-of-type(1)');
+                const monthSelect = dateInput.querySelector('select');
+                const yearInput = dateInput.querySelector('input[type="number"]:nth-of-type(2)');
+                const errorElement = dateInput.querySelector('.error-message');
+
+                const day = parseInt(dayInput.value);
+                const month = parseInt(monthSelect.value);
+                const year = parseInt(yearInput.value);
+
+                // Clear previous error state
+                dateInput.classList.remove('invalid');
+                errorElement.style.display = 'none';
+                errorElement.textContent = '';
+
+                // Validate day exists in month
+                if (!isNaN(day)) {
+                    const maxDays = getDaysInMonth(month, year);
+                    if (day < 1 || day > maxDays) {
+                        dateInput.classList.add('invalid');
+                        errorElement.textContent = `Invalid day for ${months[month-1]}. Must be between 1 and ${maxDays}.`;
+                        errorElement.style.display = 'block';
+                        return false;
+                    }
+                }
+
+                // Validate full date
+                if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                    if (!isValidDate(day, month, year)) {
+                        dateInput.classList.add('invalid');
+                        errorElement.textContent = 'Invalid date';
+                        errorElement.style.display = 'block';
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            // Function to get US federal holidays for a given year
+            function getFederalHolidays(year) {
+                const holidays = [];
+                
+                // New Year's Day (January 1, or Monday if it's Sunday)
+                let newYearsDay = new Date(year, 0, 1);
+                if (newYearsDay.getDay() === 0) {
+                    newYearsDay = new Date(year, 0, 2);
+                }
+                holidays.push({ date: newYearsDay, name: "New Year's Day" });
+                
+                // Martin Luther King Jr. Day (3rd Monday in January)
+                const mlkDay = new Date(year, 0, 1);
+                while (mlkDay.getDay() !== 1 || (mlkDay.getDate() + 6) / 7 !== 3) {
+                    mlkDay.setDate(mlkDay.getDate() + 1);
+                }
+                holidays.push({ date: new Date(mlkDay), name: "Martin Luther King Jr. Day" });
+                
+                // Presidents' Day (3rd Monday in February)
+                const presidentsDay = new Date(year, 1, 1);
+                while (presidentsDay.getDay() !== 1 || (presidentsDay.getDate() + 6) / 7 !== 3) {
+                    presidentsDay.setDate(presidentsDay.getDate() + 1);
+                }
+                holidays.push({ date: new Date(presidentsDay), name: "Presidents' Day" });
+                
+                // Memorial Day (last Monday in May)
+                const memorialDay = new Date(year, 4, 31);
+                while (memorialDay.getDay() !== 1) {
+                    memorialDay.setDate(memorialDay.getDate() - 1);
+                }
+                holidays.push({ date: new Date(memorialDay), name: "Memorial Day" });
+                
+                // Juneteenth (June 19, or Friday if it's Saturday, Monday if it's Sunday)
+                let juneteenth = new Date(year, 5, 19);
+                if (juneteenth.getDay() === 0) {
+                    juneteenth = new Date(year, 5, 20);
+                } else if (juneteenth.getDay() === 6) {
+                    juneteenth = new Date(year, 5, 18);
+                }
+                holidays.push({ date: juneteenth, name: "Juneteenth" });
+                
+                // Independence Day (July 4, or Monday if it's Sunday, Friday if it's Saturday)
+                let independenceDay = new Date(year, 6, 4);
+                if (independenceDay.getDay() === 0) {
+                    independenceDay = new Date(year, 6, 5);
+                } else if (independenceDay.getDay() === 6) {
+                    independenceDay = new Date(year, 6, 3);
+                }
+                holidays.push({ date: independenceDay, name: "Independence Day" });
+                
+                // Labor Day (1st Monday in September)
+                const laborDay = new Date(year, 8, 1);
+                while (laborDay.getDay() !== 1) {
+                    laborDay.setDate(laborDay.getDate() + 1);
+                }
+                holidays.push({ date: new Date(laborDay), name: "Labor Day" });
+                
+                // Columbus Day (2nd Monday in October)
+                const columbusDay = new Date(year, 9, 1);
+                while (columbusDay.getDay() !== 1 || (columbusDay.getDate() + 6) / 7 !== 2) {
+                    columbusDay.setDate(columbusDay.getDate() + 1);
+                }
+                holidays.push({ date: new Date(columbusDay), name: "Columbus Day" });
+                
+                // Veterans Day (November 11, or Friday if it's Saturday, Monday if it's Sunday)
+                let veteransDay = new Date(year, 10, 11);
+                if (veteransDay.getDay() === 0) {
+                    veteransDay = new Date(year, 10, 12);
+                } else if (veteransDay.getDay() === 6) {
+                    veteransDay = new Date(year, 10, 10);
+                }
+                holidays.push({ date: veteransDay, name: "Veterans Day" });
+                
+                // Thanksgiving Day (4th Thursday in November)
+                const thanksgiving = new Date(year, 10, 1);
+                while (thanksgiving.getDay() !== 4 || (thanksgiving.getDate() + 21) / 7 > 4) {
+                    thanksgiving.setDate(thanksgiving.getDate() + 1);
+                }
+                holidays.push({ date: new Date(thanksgiving), name: "Thanksgiving Day" });
+                
+                // Christmas Day (December 25, or Monday if it's Sunday, Friday if it's Saturday)
+                let christmasDay = new Date(year, 11, 25);
+                if (christmasDay.getDay() === 0) {
+                    christmasDay = new Date(year, 11, 26);
+                } else if (christmasDay.getDay() === 6) {
+                    christmasDay = new Date(year, 11, 24);
+                }
+                holidays.push({ date: christmasDay, name: "Christmas Day" });
+                
+                return holidays;
+            }
+
+            // Main calculation function
+            function calculateDuration() {
+                // Validate dates first
+                const startValid = validateDate({ target: document.getElementById('start-day') });
+                const endValid = validateDate({ target: document.getElementById('end-day') });
+                
+                if (!startValid || !endValid) {
+                    alert('Please correct the invalid dates before calculating');
+                    return;
+                }
+
+                // Get input values
+                const startMonth = parseInt(document.getElementById('start-month').value);
+                const startDay = parseInt(document.getElementById('start-day').value);
+                const startYear = parseInt(document.getElementById('start-year').value);
+                
+                const endMonth = parseInt(document.getElementById('end-month').value);
+                const endDay = parseInt(document.getElementById('end-day').value);
+                const endYear = parseInt(document.getElementById('end-year').value);
+                
+                const exclusionOption = document.getElementById('exclusion-option').value;
+                const includeEndDate = document.getElementById('include-end-date').checked;
+                
+                // Create date objects
+                const startDate = new Date(startYear, startMonth - 1, startDay);
+                let endDate = new Date(endYear, endMonth - 1, endDay);
+                
+                // Adjust end date if includeEndDate is checked
+                if (includeEndDate) {
+                    endDate = new Date(endDate.getTime() + 24 * 60 * 60 * 1000);
+                }
+                
+                // Validate date range
+                if (startDate > endDate) {
+                    alert('Start date must be before end date');
+                    return;
+                }
+                
+                // Initialize counters
+                let businessDays = 0;
+                let calendarDays = 0;
+                let skippedSaturdays = 0;
+                let skippedSundays = 0;
+                let skippedHolidays = 0;
+                const skippedHolidayNames = [];
+                
+                // Get holidays for the relevant years
+                const holidays = [];
+                const startYearForHolidays = startDate.getFullYear();
+                const endYearForHolidays = endDate.getFullYear();
+                
+                for (let year = startYearForHolidays; year <= endYearForHolidays; year++) {
+                    holidays.push(...getFederalHolidays(year));
+                }
+                
+                // Iterate through each day in the range
+                const currentDate = new Date(startDate);
+                while (currentDate < endDate) {
+                    calendarDays++;
+                    
+                    const dayOfWeek = currentDate.getDay();
+                    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                    
+                    // Check if current date is a holiday
+                    let isHoliday = false;
+                    let holidayName = '';
+                    
+                    for (const holiday of holidays) {
+                        if (holiday.date.getFullYear() === currentDate.getFullYear() &&
+                            holiday.date.getMonth() === currentDate.getMonth() &&
+                            holiday.date.getDate() === currentDate.getDate()) {
+                            isHoliday = true;
+                            holidayName = holiday.name;
+                            break;
+                        }
+                    }
+                    
+                    // Determine if this day should be counted based on exclusion option
+                    let countDay = true;
+                    
+                    if (exclusionOption === 'weekends-holidays') {
+                        if (isWeekend || isHoliday) {
+                            countDay = false;
+                        }
+                    } else if (exclusionOption === 'weekends') {
+                        if (isWeekend) {
+                            countDay = false;
+                        }
+                    } else if (exclusionOption === 'sundays') {
+                        if (dayOfWeek === 0) {
+                            countDay = false;
+                        }
+                    }
+                    
+                    // Update counters
+                    if (countDay) {
+                        businessDays++;
+                    } else {
+                        if (dayOfWeek === 6) skippedSaturdays++;
+                        if (dayOfWeek === 0) skippedSundays++;
+                        if (isHoliday) {
+                            skippedHolidays++;
+                            skippedHolidayNames.push(`${holidayName} (${currentDate.getMonth() + 1}/${currentDate.getDate()}/${currentDate.getFullYear()})`);
+                        }
+                    }
+                    
+                    // Move to next day
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+                
+                // Format dates for display
+                const formatDate = (date) => {
+                    return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+                };
+                
+                // Display results
+                document.getElementById('from-date').textContent = `From: ${formatDate(startDate)}`;
+                document.getElementById('to-date').textContent = `To: ${formatDate(new Date(endYear, endMonth - 1, endDay))}${includeEndDate ? ' (including end date)' : ''}`;
+                document.getElementById('business-days').textContent = `${businessDays} business days`;
+                document.getElementById('calendar-days').textContent = `${calendarDays} calendar days in total`;
+                
+                let skippedText = `${businessDays === calendarDays ? '0' : (calendarDays - businessDays)} days skipped due to:`;
+                if (skippedSaturdays > 0) skippedText += ` ${skippedSaturdays} Saturdays,`;
+                if (skippedSundays > 0) skippedText += ` ${skippedSundays} Sundays,`;
+                if (skippedHolidays > 0) skippedText += ` ${skippedHolidays} US federal holidays`;
+                
+                // Clean up trailing commas
+                skippedText = skippedText.replace(/,(\s*)$/, '$1');
+                
+                document.getElementById('skipped-days').textContent = skippedText;
+                
+                // Display holiday list if any
+                const holidayList = document.getElementById('holiday-list');
+                if (skippedHolidayNames.length > 0) {
+                    holidayList.innerHTML = '<strong>Skipped Holidays:</strong><br>' + skippedHolidayNames.join('<br>');
+                } else {
+                    holidayList.innerHTML = '';
+                }
+                
+                // Show output
+                document.getElementById('results-section').style.display = 'block';
+            }
+
+            // Clear form function
+            function clearForm() {
+                // Reset to today's date
+                const today = new Date();
+                const currentMonth = today.getMonth() + 1;
+                const currentDay = today.getDate();
+                const currentYear = today.getFullYear();
+
+                document.getElementById('start-month').value = currentMonth;
+                document.getElementById('start-day').value = currentDay;
+                document.getElementById('start-year').value = currentYear;
+                
+                document.getElementById('end-month').value = currentMonth;
+                document.getElementById('end-day').value = currentDay;
+                document.getElementById('end-year').value = currentYear;
+                
+                // Reset other options
+                document.getElementById('exclusion-option').value = 'weekends-holidays';
+                document.getElementById('include-end-date').checked = false;
+                
+                // Clear error states
+                document.getElementById('start-date-input').classList.remove('invalid');
+                document.getElementById('start-date-error').style.display = 'none';
+                document.getElementById('end-date-input').classList.remove('invalid');
+                document.getElementById('end-date-error').style.display = 'none';
+                
+                // Hide output
+                document.getElementById('results-section').style.display = 'none';
+            }
+
+            // Add event listeners after all elements are created
+            document.getElementById('calculate-btn').addEventListener('click', calculateDuration);
+            document.getElementById('clear-btn').addEventListener('click', clearForm);
+
+            // Add input validation
+            document.getElementById('start-day').addEventListener('change', validateDate);
+            document.getElementById('start-month').addEventListener('change', validateDate);
+            document.getElementById('start-year').addEventListener('change', validateDate);
+            document.getElementById('end-day').addEventListener('change', validateDate);
+            document.getElementById('end-month').addEventListener('change', validateDate);
+            document.getElementById('end-year').addEventListener('change', validateDate);
+        });
+    </script>
+</body>
+</html>
