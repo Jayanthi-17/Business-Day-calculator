@@ -204,6 +204,16 @@
                         font-size: 15px;
                     }
                     
+                    #app-container .business-days-result {
+                        font-size: 18px;
+                        font-weight: bold;
+                        color: #ad2a24;
+                        margin: 15px 0;
+                        padding: 10px;
+                        background-color: #f9f5e8;
+                        border-radius: 4px;
+                    }
+                    
                     #app-container .holiday-list {
                         margin-top: 10px;
                         padding-top: 10px;
@@ -264,8 +274,7 @@
                         <h3>Calculation Results</h3>
                         <div class="result-line" id="from-date"></div>
                         <div class="result-line" id="to-date"></div>
-                        <div class="result-line"><strong>Result:</strong></div>
-                        <div class="result-line" id="business-days"></div>
+                        <div class="business-days-result" id="business-days"></div>
                         <div class="result-line" id="calendar-days"></div>
                         <div class="result-line" id="skipped-days"></div>
                         <div class="holiday-list" id="holiday-list"></div>
@@ -382,14 +391,16 @@
                 
                 // Martin Luther King Jr. Day (3rd Monday in January)
                 const mlkDay = new Date(year, 0, 1);
-                while (mlkDay.getDay() !== 1 || (mlkDay.getDate() + 6) / 7 !== 3) {
+                mlkDay.setDate(1);
+                while (mlkDay.getDay() !== 1 || (mlkDay.getDate() + 6) / 7 < 3) {
                     mlkDay.setDate(mlkDay.getDate() + 1);
                 }
                 holidays.push({ date: new Date(mlkDay), name: "Martin Luther King Jr. Day" });
                 
                 // Presidents' Day (3rd Monday in February)
                 const presidentsDay = new Date(year, 1, 1);
-                while (presidentsDay.getDay() !== 1 || (presidentsDay.getDate() + 6) / 7 !== 3) {
+                presidentsDay.setDate(1);
+                while (presidentsDay.getDay() !== 1 || (presidentsDay.getDate() + 6) / 7 < 3) {
                     presidentsDay.setDate(presidentsDay.getDate() + 1);
                 }
                 holidays.push({ date: new Date(presidentsDay), name: "Presidents' Day" });
@@ -428,7 +439,8 @@
                 
                 // Columbus Day (2nd Monday in October)
                 const columbusDay = new Date(year, 9, 1);
-                while (columbusDay.getDay() !== 1 || (columbusDay.getDate() + 6) / 7 !== 2) {
+                columbusDay.setDate(1);
+                while (columbusDay.getDay() !== 1 || (columbusDay.getDate() + 6) / 7 < 2) {
                     columbusDay.setDate(columbusDay.getDate() + 1);
                 }
                 holidays.push({ date: new Date(columbusDay), name: "Columbus Day" });
@@ -444,7 +456,8 @@
                 
                 // Thanksgiving Day (4th Thursday in November)
                 const thanksgiving = new Date(year, 10, 1);
-                while (thanksgiving.getDay() !== 4 || (thanksgiving.getDate() + 21) / 7 > 4) {
+                thanksgiving.setDate(1);
+                while (thanksgiving.getDay() !== 4 || (thanksgiving.getDate() + 21) / 7 < 4) {
                     thanksgiving.setDate(thanksgiving.getDate() + 1);
                 }
                 holidays.push({ date: new Date(thanksgiving), name: "Thanksgiving Day" });
@@ -468,7 +481,7 @@
                 const endValid = validateDate({ target: document.getElementById('end-day') });
                 
                 if (!startValid || !endValid) {
-                    alert('Please correct the invalid dates before calculating');
+                    document.Error('Please correct the invalid dates before calculating');
                     return;
                 }
 
