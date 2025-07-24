@@ -221,6 +221,16 @@
                         font-size: 14px;
                         color: #666;
                     }
+                    
+                    .holiday-observed {
+                        color: #ad2a24;
+                        font-style: italic;
+                    }
+                    
+                    .holiday-original {
+                        font-size: 0.9em;
+                        color: #666;
+                    }
                 </style>
 
                 <div class="business-days-calculator">
@@ -382,12 +392,22 @@
             function getFederalHolidays(year) {
                 const holidays = [];
                 
-                // New Year's Day (January 1, or Monday if it's Sunday)
+                // New Year's Day (January 1, adjusted if weekend)
                 let newYearsDay = new Date(year, 0, 1);
-                if (newYearsDay.getDay() === 0) {
+                let isObserved = false;
+                if (newYearsDay.getDay() === 0) { // Sunday
                     newYearsDay = new Date(year, 0, 2);
+                    isObserved = true;
+                } else if (newYearsDay.getDay() === 6) { // Saturday
+                    newYearsDay = new Date(year - 1, 11, 31); // Dec 31 previous year
+                    isObserved = true;
                 }
-                holidays.push({ date: newYearsDay, name: "New Year's Day" });
+                holidays.push({ 
+                    date: newYearsDay, 
+                    name: "New Year's Day",
+                    isObserved: isObserved,
+                    actualDate: new Date(year, 0, 1)
+                });
                 
                 // Birthday of Martin Luther King, Jr. (Third Monday in January)
                 const mlkDay = new Date(year, 0, 1);
@@ -395,7 +415,12 @@
                 while (mlkDay.getDay() !== 1 || (mlkDay.getDate() + 6) / 7 < 3) {
                     mlkDay.setDate(mlkDay.getDate() + 1);
                 }
-                holidays.push({ date: new Date(mlkDay), name: "Birthday of Martin Luther King, Jr." });
+                holidays.push({ 
+                    date: new Date(mlkDay), 
+                    name: "Birthday of Martin Luther King, Jr.",
+                    isObserved: false,
+                    actualDate: new Date(mlkDay)
+                });
                 
                 // Washington's Birthday (Third Monday in February)
                 const washingtonsBirthday = new Date(year, 1, 1);
@@ -403,39 +428,70 @@
                 while (washingtonsBirthday.getDay() !== 1 || (washingtonsBirthday.getDate() + 6) / 7 < 3) {
                     washingtonsBirthday.setDate(washingtonsBirthday.getDate() + 1);
                 }
-                holidays.push({ date: new Date(washingtonsBirthday), name: "Washington's Birthday" });
+                holidays.push({ 
+                    date: new Date(washingtonsBirthday), 
+                    name: "Washington's Birthday",
+                    isObserved: false,
+                    actualDate: new Date(washingtonsBirthday)
+                });
                 
                 // Memorial Day (Last Monday in May)
                 const memorialDay = new Date(year, 4, 31);
                 while (memorialDay.getDay() !== 1) {
                     memorialDay.setDate(memorialDay.getDate() - 1);
                 }
-                holidays.push({ date: new Date(memorialDay), name: "Memorial Day" });
+                holidays.push({ 
+                    date: new Date(memorialDay), 
+                    name: "Memorial Day",
+                    isObserved: false,
+                    actualDate: new Date(memorialDay)
+                });
                 
-                // Juneteenth National Independence Day (June 19, or Friday if it's Saturday, Monday if it's Sunday)
+                // Juneteenth National Independence Day (June 19)
                 let juneteenth = new Date(year, 5, 19);
-                if (juneteenth.getDay() === 0) {
+                let isObservedJuneteenth = false;
+                if (juneteenth.getDay() === 0) { // Sunday
                     juneteenth = new Date(year, 5, 20);
-                } else if (juneteenth.getDay() === 6) {
+                    isObservedJuneteenth = true;
+                } else if (juneteenth.getDay() === 6) { // Saturday
                     juneteenth = new Date(year, 5, 18);
+                    isObservedJuneteenth = true;
                 }
-                holidays.push({ date: juneteenth, name: "Juneteenth National Independence Day" });
+                holidays.push({ 
+                    date: juneteenth, 
+                    name: "Juneteenth National Independence Day",
+                    isObserved: isObservedJuneteenth,
+                    actualDate: new Date(year, 5, 19)
+                });
                 
-                // Independence Day (July 4, or Monday if it's Sunday, Friday if it's Saturday)
+                // Independence Day (July 4)
                 let independenceDay = new Date(year, 6, 4);
-                if (independenceDay.getDay() === 0) {
+                let isObservedIndependence = false;
+                if (independenceDay.getDay() === 0) { // Sunday
                     independenceDay = new Date(year, 6, 5);
-                } else if (independenceDay.getDay() === 6) {
+                    isObservedIndependence = true;
+                } else if (independenceDay.getDay() === 6) { // Saturday
                     independenceDay = new Date(year, 6, 3);
+                    isObservedIndependence = true;
                 }
-                holidays.push({ date: independenceDay, name: "Independence Day" });
+                holidays.push({ 
+                    date: independenceDay, 
+                    name: "Independence Day",
+                    isObserved: isObservedIndependence,
+                    actualDate: new Date(year, 6, 4)
+                });
                 
                 // Labor Day (First Monday in September)
                 const laborDay = new Date(year, 8, 1);
                 while (laborDay.getDay() !== 1) {
                     laborDay.setDate(laborDay.getDate() + 1);
                 }
-                holidays.push({ date: new Date(laborDay), name: "Labor Day" });
+                holidays.push({ 
+                    date: new Date(laborDay), 
+                    name: "Labor Day",
+                    isObserved: false,
+                    actualDate: new Date(laborDay)
+                });
                 
                 // Columbus Day (Second Monday in October)
                 const columbusDay = new Date(year, 9, 1);
@@ -443,16 +499,29 @@
                 while (columbusDay.getDay() !== 1 || (columbusDay.getDate() + 6) / 7 < 2) {
                     columbusDay.setDate(columbusDay.getDate() + 1);
                 }
-                holidays.push({ date: new Date(columbusDay), name: "Columbus Day" });
+                holidays.push({ 
+                    date: new Date(columbusDay), 
+                    name: "Columbus Day",
+                    isObserved: false,
+                    actualDate: new Date(columbusDay)
+                });
                 
-                // Veterans Day (November 11, or Friday if it's Saturday, Monday if it's Sunday)
+                // Veterans Day (November 11)
                 let veteransDay = new Date(year, 10, 11);
-                if (veteransDay.getDay() === 0) {
+                let isObservedVeterans = false;
+                if (veteransDay.getDay() === 0) { // Sunday
                     veteransDay = new Date(year, 10, 12);
-                } else if (veteransDay.getDay() === 6) {
+                    isObservedVeterans = true;
+                } else if (veteransDay.getDay() === 6) { // Saturday
                     veteransDay = new Date(year, 10, 10);
+                    isObservedVeterans = true;
                 }
-                holidays.push({ date: veteransDay, name: "Veterans Day" });
+                holidays.push({ 
+                    date: veteransDay, 
+                    name: "Veterans Day",
+                    isObserved: isObservedVeterans,
+                    actualDate: new Date(year, 10, 11)
+                });
                 
                 // Thanksgiving Day (Fourth Thursday in November)
                 const thanksgiving = new Date(year, 10, 1);
@@ -460,16 +529,29 @@
                 while (thanksgiving.getDay() !== 4 || (thanksgiving.getDate() + 21) / 7 < 4) {
                     thanksgiving.setDate(thanksgiving.getDate() + 1);
                 }
-                holidays.push({ date: new Date(thanksgiving), name: "Thanksgiving Day" });
+                holidays.push({ 
+                    date: new Date(thanksgiving), 
+                    name: "Thanksgiving Day",
+                    isObserved: false,
+                    actualDate: new Date(thanksgiving)
+                });
                 
-                // Christmas Day (December 25, or Monday if it's Sunday, Friday if it's Saturday)
+                // Christmas Day (December 25)
                 let christmasDay = new Date(year, 11, 25);
-                if (christmasDay.getDay() === 0) {
+                let isObservedChristmas = false;
+                if (christmasDay.getDay() === 0) { // Sunday
                     christmasDay = new Date(year, 11, 26);
-                } else if (christmasDay.getDay() === 6) {
+                    isObservedChristmas = true;
+                } else if (christmasDay.getDay() === 6) { // Saturday
                     christmasDay = new Date(year, 11, 24);
+                    isObservedChristmas = true;
                 }
-                holidays.push({ date: christmasDay, name: "Christmas Day" });
+                holidays.push({ 
+                    date: christmasDay, 
+                    name: "Christmas Day",
+                    isObserved: isObservedChristmas,
+                    actualDate: new Date(year, 11, 25)
+                });
                 
                 return holidays;
             }
@@ -540,6 +622,8 @@
                     // Check if current date is a holiday
                     let isHoliday = false;
                     let holidayName = '';
+                    let isObservedHoliday = false;
+                    let originalHolidayDate = '';
                     
                     for (const holiday of holidays) {
                         if (holiday.date.getFullYear() === currentDate.getFullYear() &&
@@ -547,6 +631,10 @@
                             holiday.date.getDate() === currentDate.getDate()) {
                             isHoliday = true;
                             holidayName = holiday.name;
+                            isObservedHoliday = holiday.isObserved;
+                            if (holiday.isObserved) {
+                                originalHolidayDate = `${holiday.actualDate.getMonth()+1}/${holiday.actualDate.getDate()}/${holiday.actualDate.getFullYear()}`;
+                            }
                             break;
                         }
                     }
@@ -576,7 +664,15 @@
                         if (dayOfWeek === 0) skippedSundays++;
                         if (isHoliday) {
                             skippedHolidays++;
-                            skippedHolidayNames.push(`${holidayName} (${currentDate.getMonth() + 1}/${currentDate.getDate()}/${currentDate.getFullYear()})`);
+                            let displayText = holidayName;
+                            if (isObservedHoliday) {
+                                displayText += ' <span class="holiday-observed">(Observed)</span>';
+                            }
+                            displayText += ` - ${currentDate.getMonth()+1}/${currentDate.getDate()}/${currentDate.getFullYear()}`;
+                            if (isObservedHoliday) {
+                                displayText += ` <span class="holiday-original">(Originally ${originalHolidayDate})</span>`;
+                            }
+                            skippedHolidayNames.push(displayText);
                         }
                     }
                     
