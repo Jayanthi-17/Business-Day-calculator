@@ -389,37 +389,37 @@
                 }
                 holidays.push({ date: newYearsDay, name: "New Year's Day" });
                 
-                // Martin Luther King Jr. Day (3rd Monday in January)
+                // Birthday of Martin Luther King, Jr. (Third Monday in January)
                 const mlkDay = new Date(year, 0, 1);
                 mlkDay.setDate(1);
                 while (mlkDay.getDay() !== 1 || (mlkDay.getDate() + 6) / 7 < 3) {
                     mlkDay.setDate(mlkDay.getDate() + 1);
                 }
-                holidays.push({ date: new Date(mlkDay), name: "Martin Luther King Jr. Day" });
+                holidays.push({ date: new Date(mlkDay), name: "Birthday of Martin Luther King, Jr." });
                 
-                // Presidents' Day (3rd Monday in February)
-                const presidentsDay = new Date(year, 1, 1);
-                presidentsDay.setDate(1);
-                while (presidentsDay.getDay() !== 1 || (presidentsDay.getDate() + 6) / 7 < 3) {
-                    presidentsDay.setDate(presidentsDay.getDate() + 1);
+                // Washington's Birthday (Third Monday in February)
+                const washingtonsBirthday = new Date(year, 1, 1);
+                washingtonsBirthday.setDate(1);
+                while (washingtonsBirthday.getDay() !== 1 || (washingtonsBirthday.getDate() + 6) / 7 < 3) {
+                    washingtonsBirthday.setDate(washingtonsBirthday.getDate() + 1);
                 }
-                holidays.push({ date: new Date(presidentsDay), name: "Presidents' Day" });
+                holidays.push({ date: new Date(washingtonsBirthday), name: "Washington's Birthday" });
                 
-                // Memorial Day (last Monday in May)
+                // Memorial Day (Last Monday in May)
                 const memorialDay = new Date(year, 4, 31);
                 while (memorialDay.getDay() !== 1) {
                     memorialDay.setDate(memorialDay.getDate() - 1);
                 }
                 holidays.push({ date: new Date(memorialDay), name: "Memorial Day" });
                 
-                // Juneteenth (June 19, or Friday if it's Saturday, Monday if it's Sunday)
+                // Juneteenth National Independence Day (June 19, or Friday if it's Saturday, Monday if it's Sunday)
                 let juneteenth = new Date(year, 5, 19);
                 if (juneteenth.getDay() === 0) {
                     juneteenth = new Date(year, 5, 20);
                 } else if (juneteenth.getDay() === 6) {
                     juneteenth = new Date(year, 5, 18);
                 }
-                holidays.push({ date: juneteenth, name: "Juneteenth" });
+                holidays.push({ date: juneteenth, name: "Juneteenth National Independence Day" });
                 
                 // Independence Day (July 4, or Monday if it's Sunday, Friday if it's Saturday)
                 let independenceDay = new Date(year, 6, 4);
@@ -430,14 +430,14 @@
                 }
                 holidays.push({ date: independenceDay, name: "Independence Day" });
                 
-                // Labor Day (1st Monday in September)
+                // Labor Day (First Monday in September)
                 const laborDay = new Date(year, 8, 1);
                 while (laborDay.getDay() !== 1) {
                     laborDay.setDate(laborDay.getDate() + 1);
                 }
                 holidays.push({ date: new Date(laborDay), name: "Labor Day" });
                 
-                // Columbus Day (2nd Monday in October)
+                // Columbus Day (Second Monday in October)
                 const columbusDay = new Date(year, 9, 1);
                 columbusDay.setDate(1);
                 while (columbusDay.getDay() !== 1 || (columbusDay.getDate() + 6) / 7 < 2) {
@@ -454,7 +454,7 @@
                 }
                 holidays.push({ date: veteransDay, name: "Veterans Day" });
                 
-                // Thanksgiving Day (4th Thursday in November)
+                // Thanksgiving Day (Fourth Thursday in November)
                 const thanksgiving = new Date(year, 10, 1);
                 thanksgiving.setDate(1);
                 while (thanksgiving.getDay() !== 4 || (thanksgiving.getDate() + 21) / 7 < 4) {
@@ -481,7 +481,7 @@
                 const endValid = validateDate({ target: document.getElementById('end-day') });
                 
                 if (!startValid || !endValid) {
-                    document.Error('Please correct the invalid dates before calculating');
+                    alert('Please correct the invalid dates before calculating');
                     return;
                 }
 
